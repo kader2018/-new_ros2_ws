@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>asterassembly_description</name>
+  <version>0.0.0</version>
+  <description>Package pour le robot ASTER avec un node de marche ZMP</description>
+  <maintainer email="ilyana@example.com">ilyana</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>numpy</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

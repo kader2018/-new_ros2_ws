@@ -1,0 +1,492 @@
+<?xml version="1.0" ?>
+<robot name="asterassembly" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find asterassembly_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find asterassembly_description)/urdf/asterassembly_transmissions.xacro"/>
+<xacro:include filename="$(find asterassembly_description)/urdf/asterassembly.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin xyz="-0.02649048941024608 0.14307593183560333 0.01313305806744613" rpy="0 0 0"/>
+    <mass value="0.8804262150094873"/>
+    <inertia ixx="0.010931" iyy="0.002134" izz="0.012571" ixy="3e-06" iyz="-0.00028" ixz="1e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="nuque_1">
+  <inertial>
+    <origin xyz="-0.0008401846492762828 0.011578769826425084 -7.20710170605543e-07" rpy="0 0 0"/>
+    <mass value="0.011596176054625311"/>
+    <inertia ixx="2e-06" iyy="5e-06" izz="6e-06" ixy="0.0" iyz="0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.026426 -0.261352 -0.021359" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/nuque_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.026426 -0.261352 -0.021359" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/nuque_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="tete_1">
+  <inertial>
+    <origin xyz="-0.021825522227968464 0.026642905988744525 -0.004074118529040643" rpy="0 0 0"/>
+    <mass value="0.26135466249696476"/>
+    <inertia ixx="0.000291" iyy="0.000505" izz="0.000593" ixy="6e-06" iyz="-9e-06" ixz="5e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.005426 -0.287352 -0.021377" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tete_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.005426 -0.287352 -0.021377" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tete_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="clavi_droite_1">
+  <inertial>
+    <origin xyz="-0.005751129363027699 0.002260848676443439 -0.009662045951862262" rpy="0 0 0"/>
+    <mass value="0.016727921981044665"/>
+    <inertia ixx="7e-06" iyy="8e-06" izz="4e-06" ixy="-0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.10682 -0.225959 -0.022181" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/clavi_droite_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.10682 -0.225959 -0.022181" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/clavi_droite_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="epaule_droite_1">
+  <inertial>
+    <origin xyz="-0.0002788421397713903 -0.012984483286680254 -0.023557883138485863" rpy="0 0 0"/>
+    <mass value="0.09096641285348295"/>
+    <inertia ixx="3.2e-05" iyy="2.1e-05" izz="2.6e-05" ixy="-0.0" iyz="-0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.129871 -0.22501 -0.037428" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/epaule_droite_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.129871 -0.22501 -0.037428" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/epaule_droite_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bras_droit_1">
+  <inertial>
+    <origin xyz="-0.00016350570461631797 -0.05787538902217279 0.006766810191711418" rpy="0 0 0"/>
+    <mass value="0.14310983873504673"/>
+    <inertia ixx="0.000242" iyy="3.9e-05" izz="0.000239" ixy="-1e-06" iyz="-1e-05" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.129904 -0.189725 -0.006053" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/bras_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.129904 -0.189725 -0.006053" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/bras_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="av_bras_droit_1">
+  <inertial>
+    <origin xyz="0.01665941106491864 -0.1067715811270065 0.025123432683499123" rpy="0 0 0"/>
+    <mass value="0.09821464658681929"/>
+    <inertia ixx="0.000337" iyy="6.3e-05" izz="0.000295" ixy="-1.5e-05" iyz="0.000101" ixz="4e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.151502 -0.07867 -0.010334" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/av_bras_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.151502 -0.07867 -0.010334" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/av_bras_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="av_bras_gauche_1">
+  <inertial>
+    <origin xyz="-0.016701252120911184 -0.10632476910373678 0.025296445418198726" rpy="0 0 0"/>
+    <mass value="0.09801704144644331"/>
+    <inertia ixx="0.000334" iyy="6.3e-05" izz="0.000292" ixy="1.5e-05" iyz="0.000101" ixz="-4e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.098139 -0.078031 -0.010143" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/av_bras_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.098139 -0.078031 -0.010143" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/av_bras_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bras_gauche_1">
+  <inertial>
+    <origin xyz="0.00016359006047725333 -0.057875592071835874 0.006766415841195792" rpy="0 0 0"/>
+    <mass value="0.14311021816922367"/>
+    <inertia ixx="0.000242" iyy="3.9e-05" izz="0.000239" ixy="1e-06" iyz="-1e-05" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.076441 -0.189086 -0.005862" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/bras_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.076441 -0.189086 -0.005862" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/bras_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="epaule_gauche_1">
+  <inertial>
+    <origin xyz="0.00027772809675108423 -0.012547406466795752 -0.023673490284412915" rpy="0 0 0"/>
+    <mass value="0.09160984818850355"/>
+    <inertia ixx="3.3e-05" iyy="2.1e-05" izz="2.7e-05" ixy="0.0" iyz="-0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.076407 -0.224365 -0.037337" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/epaule_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.076407 -0.224365 -0.037337" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/epaule_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="clavi_gauche_1">
+  <inertial>
+    <origin xyz="0.005752831210820694 0.0022624414912496837 -0.009659317844627988" rpy="0 0 0"/>
+    <mass value="0.01672863456899598"/>
+    <inertia ixx="7e-06" iyy="8e-06" izz="4e-06" ixy="0.0" iyz="0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.053356 -0.225314 -0.022089" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/clavi_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.053356 -0.225314 -0.022089" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/clavi_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="cuisse_droit_1">
+  <inertial>
+    <origin xyz="-0.010978872655210928 -0.12029750870910763 0.0018565433065199834" rpy="0 0 0"/>
+    <mass value="0.1354015662983711"/>
+    <inertia ixx="0.000518" iyy="8.2e-05" izz="0.000535" ixy="7.2e-05" iyz="1.2e-05" ixz="-3e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.065778 0.050482 -0.011823" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/cuisse_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.065778 0.050482 -0.011823" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/cuisse_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="tibia_droit_1">
+  <inertial>
+    <origin xyz="0.023115349088039305 -0.11002109695609749 0.0035327487839455878" rpy="0 0 0"/>
+    <mass value="0.12431453046332011"/>
+    <inertia ixx="0.000558" iyy="5.5e-05" izz="0.00056" ixy="-4e-06" iyz="-2.1e-05" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.091736 0.23215 -0.011822" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tibia_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.091736 0.23215 -0.011822" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tibia_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="pied_droit_1">
+  <inertial>
+    <origin xyz="0.021974260929756892 -0.018728333980630008 0.027370506072938734" rpy="0 0 0"/>
+    <mass value="0.08328477517977392"/>
+    <inertia ixx="0.000144" iyy="0.000157" izz="3.3e-05" ixy="-1e-06" iyz="7e-06" ixz="5e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.090505 0.409877 -0.013001" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/pied_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.090505 0.409877 -0.013001" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/pied_droit_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="pied_gauche_1">
+  <inertial>
+    <origin xyz="-0.021973549325331028 -0.018728852063023382 0.027370497810307544" rpy="0 0 0"/>
+    <mass value="0.08328478670667518"/>
+    <inertia ixx="0.000144" iyy="0.000157" izz="3.3e-05" ixy="1e-06" iyz="7e-06" ixz="-5e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.040155 0.410163 -0.013001" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/pied_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.040155 0.410163 -0.013001" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/pied_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="tibia_gauche_1">
+  <inertial>
+    <origin xyz="-0.023231286623372618 -0.1101492010159266 0.0035319891822498395" rpy="0 0 0"/>
+    <mass value="0.12434861483192293"/>
+    <inertia ixx="0.000559" iyy="5.5e-05" izz="0.000562" ixy="3e-06" iyz="-2.1e-05" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.042673 0.23215 -0.011822" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tibia_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.042673 0.23215 -0.011822" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/tibia_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="cuisse_gauche_1">
+  <inertial>
+    <origin xyz="0.010979018712247667 -0.12029727419378305 0.001856533496813714" rpy="0 0 0"/>
+    <mass value="0.13540171574671475"/>
+    <inertia ixx="0.000518" iyy="8.2e-05" izz="0.000535" ixy="-7.2e-05" iyz="1.2e-05" ixz="3e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.016815 0.050482 -0.011823" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/cuisse_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.016815 0.050482 -0.011823" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find asterassembly_description)/meshes/cuisse_gauche_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="tete_g_d_joint" type="revolute">
+  <origin xyz="-0.026426 0.261352 0.021359" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="nuque_1"/>
+  <axis xyz="-0.0 1.0 0.0"/>
+  <limit upper="2.617994" lower="-2.268928" effort="100" velocity="100"/>
+</joint>
+
+<joint name="tete_h_b_joint" type="revolute">
+  <origin xyz="0.021 0.026000000000000023 1.8000000000000654e-05" rpy="0 0 0"/>
+  <parent link="nuque_1"/>
+  <child link="tete_1"/>
+  <axis xyz="1.0 0.0 0.000856"/>
+  <limit upper="0.349066" lower="-0.610865" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_droit_de_ar_joint" type="revolute">
+  <origin xyz="-0.10682 0.225959 0.022181" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="clavi_droite_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit upper="2.181662" lower="-2.268928" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_droit_h_b_joint" type="revolute">
+  <origin xyz="-0.023050999999999988 -0.0009490000000000054 0.015247000000000004" rpy="0 0 0"/>
+  <parent link="clavi_droite_1"/>
+  <child link="epaule_droite_1"/>
+  <axis xyz="-0.0 -0.059321 0.998239"/>
+  <limit upper="0.261799" lower="-3.141593" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_droit_rot_joint" type="revolute">
+  <origin xyz="-3.300000000000525e-05 -0.03528499999999998 -0.031375" rpy="0 0 0"/>
+  <parent link="epaule_droite_1"/>
+  <child link="bras_droit_1"/>
+  <axis xyz="-0.0 -0.998239 -0.059321"/>
+  <limit upper="3.403392" lower="-1.48353" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_droit_coud_joint" type="revolute">
+  <origin xyz="-0.021598000000000006 -0.111055 0.004280999999999999" rpy="0 0 0"/>
+  <parent link="bras_droit_1"/>
+  <child link="av_bras_droit_1"/>
+  <axis xyz="-0.999989 -0.003674 0.002943"/>
+  <limit upper="2.094395" lower="-0.261799" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_gauche_coude_joint" type="revolute">
+  <origin xyz="0.02169800000000001 -0.111055 0.004280999999999999" rpy="0 0 0"/>
+  <parent link="bras_gauche_1"/>
+  <child link="av_bras_gauche_1"/>
+  <axis xyz="0.999989 -0.003674 0.002943"/>
+  <limit upper="0.261799" lower="-2.181662" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_gauche_rot_joint" type="revolute">
+  <origin xyz="3.399999999999237e-05 -0.035279000000000005 -0.031475" rpy="0 0 0"/>
+  <parent link="epaule_gauche_1"/>
+  <child link="bras_gauche_1"/>
+  <axis xyz="-0.0 0.998239 0.059321"/>
+  <limit upper="2.70526" lower="-1.48353" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_gauche_h_b_joint" type="revolute">
+  <origin xyz="0.023051000000000002 -0.0009489999999999776 0.015248000000000001" rpy="0 0 0"/>
+  <parent link="clavi_gauche_1"/>
+  <child link="epaule_gauche_1"/>
+  <axis xyz="0.0 0.059321 -0.998239"/>
+  <limit upper="0.087266" lower="-2.96706" effort="100" velocity="100"/>
+</joint>
+
+<joint name="bras_gauche_de_ar_joint" type="revolute">
+  <origin xyz="0.053356 0.225314 0.022089" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="clavi_gauche_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="2.530727" lower="-2.356194" effort="100" velocity="100"/>
+</joint>
+
+<joint name="cuisse_gauche_joint" type="revolute">
+  <origin xyz="-0.065778 -0.050482 0.011823" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="cuisse_droit_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="1.658063" lower="-1.308997" effort="100" velocity="100"/>
+</joint>
+
+<joint name="genou_gauche_joint" type="revolute">
+  <origin xyz="-0.025957999999999995 -0.181668 -1.000000000001e-06" rpy="0 0 0"/>
+  <parent link="cuisse_droit_1"/>
+  <child link="tibia_droit_1"/>
+  <axis xyz="1.0 -0.0 -0.0"/>
+  <limit upper="2.268928" lower="-0.087266" effort="100" velocity="100"/>
+</joint>
+
+<joint name="cheville_gauche_joint" type="revolute">
+  <origin xyz="0.001230999999999996 -0.177727 0.0011790000000000012" rpy="0 0 0"/>
+  <parent link="tibia_droit_1"/>
+  <child link="pied_droit_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit upper="0.610865" lower="-0.436332" effort="100" velocity="100"/>
+</joint>
+
+<joint name="cheville_droite_joint" type="revolute">
+  <origin xyz="-0.0025179999999999994 -0.178013 0.0011790000000000012" rpy="0 0 0"/>
+  <parent link="tibia_gauche_1"/>
+  <child link="pied_gauche_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="0.785398" lower="-0.610865" effort="100" velocity="100"/>
+</joint>
+
+<joint name="genou_droit_joint" type="revolute">
+  <origin xyz="0.025858000000000003 -0.181668 -1.000000000001e-06" rpy="0 0 0"/>
+  <parent link="cuisse_gauche_1"/>
+  <child link="tibia_gauche_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="2.443461" lower="0.0" effort="100" velocity="100"/>
+</joint>
+
+<joint name="cuisse_droit_joint" type="revolute">
+  <origin xyz="0.016815 -0.050482 0.011823" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="cuisse_gauche_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="1.745329" lower="-1.745329" effort="100" velocity="100"/>
+</joint>
+
+</robot>

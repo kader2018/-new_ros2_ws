@@ -1,0 +1,172 @@
+{
+    "rest_positions": [
+        150,
+        140,
+        80,
+        150,
+        40,
+        10,
+        80,
+        10,
+        30,
+        10,
+        30,
+        150,
+        110,
+        40,
+        180,
+        130
+    ],
+    "current_positions": [
+        150,
+        140,
+        80,
+        150,
+        40,
+        10,
+        80,
+        10,
+        30,
+        10,
+        30,
+        150,
+        110,
+        40,
+        180,
+        130
+    ],
+    "servos": {
+        "0": {
+            "name": "bras_droit_de_ar_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 150,
+            "created": "2025-12-30T20:03:55.664017",
+            "last_updated": "2026-02-05T08:28:28.768557"
+        },
+        "1": {
+            "name": "bras_droit_h_b_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 150,
+            "rest_position": 140,
+            "created": "2025-12-30T20:03:55.664900",
+            "last_updated": "2026-02-05T08:28:40.224829"
+        },
+        "2": {
+            "name": "bras_droit_rot_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 80,
+            "created": "2025-12-30T20:03:55.670951",
+            "last_updated": "2026-02-05T08:28:49.649468"
+        },
+        "3": {
+            "name": "bras_droit_coud_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 160,
+            "rest_position": 150,
+            "created": "2025-12-30T20:03:55.673360",
+            "last_updated": "2025-12-31T11:56:55.415328"
+        },
+        "4": {
+            "name": "bras_gauche_de_ar_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 40,
+            "created": "2025-12-30T20:03:55.674569",
+            "last_updated": "2025-12-31T08:37:35.359336"
+        },
+        "5": {
+            "name": "bras_gauche_h_b_joint",
+            "low_mech_constraint": 10,
+            "high_mech_constraint": 180,
+            "rest_position": 10,
+            "created": "2025-12-30T20:03:55.676122",
+            "last_updated": "2025-12-31T11:55:54.996311"
+        },
+        "6": {
+            "name": "bras_gauche_rot_joint",
+            "low_mech_constraint": 30,
+            "high_mech_constraint": 180,
+            "rest_position": 80,
+            "created": "2025-12-30T20:03:55.677371",
+            "last_updated": "2025-12-31T11:55:40.179607"
+        },
+        "7": {
+            "name": "bras_gauche_coude_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 150,
+            "rest_position": 10,
+            "created": "2025-12-30T20:03:55.678968",
+            "last_updated": "2025-12-31T11:55:15.554448"
+        },
+        "8": {
+            "name": "cuisse_droit_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 30,
+            "created": "2025-12-30T20:03:55.680158",
+            "last_updated": "2025-12-31T08:41:20.394311"
+        },
+        "9": {
+            "name": "genou_droit_joint",
+            "low_mech_constraint": 10,
+            "high_mech_constraint": 130,
+            "rest_position": 10,
+            "created": "2025-12-30T20:03:55.681560",
+            "last_updated": "2025-12-31T11:54:02.558871"
+        },
+        "10": {
+            "name": "cheville_droite_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 80,
+            "rest_position": 30,
+            "created": "2025-12-30T20:03:55.683871",
+            "last_updated": "2025-12-31T11:53:23.036958"
+        },
+        "11": {
+            "name": "cuisse_gauche_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 150,
+            "created": "2025-12-30T20:03:55.685832",
+            "last_updated": "2025-12-31T08:41:03.001450"
+        },
+        "12": {
+            "name": "genou_gauche_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 120,
+            "rest_position": 110,
+            "created": "2025-12-30T20:03:55.689351",
+            "last_updated": "2025-12-31T09:21:26.512131"
+        },
+        "13": {
+            "name": "cheville_gauche_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 80,
+            "rest_position": 40,
+            "created": "2025-12-30T20:03:55.691328",
+            "last_updated": "2025-12-31T09:20:48.030214"
+        },
+        "14": {
+            "name": "tete_g_d_joint",
+            "low_mech_constraint": 0,
+            "high_mech_constraint": 180,
+            "rest_position": 100,
+            "created": "2025-12-30T20:03:55.693001",
+            "last_updated": "2025-12-31T08:43:49.265756"
+        },
+        "15": {
+            "name": "tete_h_b_joint",
+            "low_mech_constraint": 70,
+            "high_mech_constraint": 130,
+            "rest_position": 100,
+            "created": "2025-12-30T20:03:55.694701",
+            "last_updated": "2025-12-31T08:44:58.885206"
+        }
+    },
+    "metadata": {
+        "last_modified": "2026-02-05T08:29:35.251984",
+        "version": "1.1"
+    }
+}

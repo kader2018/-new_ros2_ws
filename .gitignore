@@ -1,0 +1,63 @@
+# ROS 2 / colcon build artifacts
+build/
+install/
+log/
+**/build/
+**/install/
+**/log/
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+env/
+.env/
+venv_*/
+
+# Local configuration and secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+asterassembly_description/old 0426/aster_server.py
+
+# Runtime uploads / generated local data
+uploads/
+**/uploads/
+
+# ROS / RViz temporary files
+*.bag
+*.db3
+*.mcap
+*.rviz~
+
+# Arduino build artifacts
+*.hex
+*.elf
+*.eep
+*.map
+*.bin
+*.lst
+*.o
+*.d
+.pio/
+.vscode/.browse.c_cpp.db*
+
+# OS and editor files
+.DS_Store
+._*
+*~
+*.swp
+*.swo
+.idea/
+.vscode/

@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import JointState
+import serial
+import json
+import math
+import os
+import time
+
+# --- CONFIGURATION ---
+SERIAL_PORT = '/dev/ttyACM1'  # Vérifiez votre port (souvent ACM0 ou USB0)
+BAUD_RATE = 115200
+JSON_PATH = 'servo_calibration.json' # Le chemin vers votre fichier JSON
+
+class ServoBridge(Node):
+    def __init__(self):
+        super().__init__('servo_bridge')
+        
+        # 1. Chargement de la Calibration
+        self.servo_map = self.load_calibration(JSON_PATH)
+        if not self.servo_map:
+            self.get_logger().error("Impossible de charger la calibration. Arrêt.")
+            exit(1)
+
+        # 2. Initialisation Série
+        try:
+            self.ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+            self.get_logger().info(f"Connecté à l'Arduino sur {SERIAL_PORT}")
+            time.sleep(2) # Attente reboot Arduino
+        except Exception as e:
+            self.get_logger().error(f"Erreur Port Série: {e}")
+            self.ser = None
+
+        # 3. Subscriber
+        self.sub = self.create_subscription(
+            JointState,
+            '/joint_states',
+            self.joint_callback,
+            10
+        )
+        
+        # Buffer pour stocker les dernières positions calculées (init à repos)
+        self.current_commands = [0] * 16
+        for servo_id, data in self.servo_map.items():
+            self.current_commands[servo_id] = data['rest']
+
+        self.get_logger().info("Servo Bridge Démarré avec Calibration JSON.")
+
+    def load_calibration(self, filepath):
+        """Lit le JSON et crée un dictionnaire {nom_joint: {id, rest, min, max}}"""
+        # Si le chemin n'est pas absolu, on cherche dans le dossier courant ou share
+        if not os.path.exists(filepath):
+            # Fallback : cherche dans le dossier courant d'exécution
+            filepath = os.path.join(os.getcwd(), filepath)
+        
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            
+            mapping = {}
+            # On parcourt la section "servos" du JSON
+            servos_data = data.get("servos", {})
+            
+            for str_id, props in servos_data.items():
+                s_id = int(str_id)
+                name = props["name"]
+                rest = props["rest_position"]
+                limit_min = props["low_mech_constraint"]
+                limit_max = props["high_mech_constraint"]
+                
+                # On stocke par nom de joint pour retrouver facilement via JointState
+                mapping[name] = {
+                    "id": s_id,
+                    "rest": rest,
+                    "min": limit_min,
+                    "max": limit_max
+                }
+            
+            self.get_logger().info(f"Calibration chargée pour {len(mapping)} servos.")
+            return mapping
+
+        except Exception as e:
+            self.get_logger().error(f"Erreur lecture JSON: {e}")
+            return None
+
+    def joint_callback(self, msg: JointState):
+        """Reçoit les radians de ROS, convertit en degrés + offset, envoie à Arduino."""
+        if not self.ser:
+            return
+
+        # Parcours des joints reçus
+        for i, name in enumerate(msg.name):
+            if name in self.servo_map:
+                # Données de calibration
+                calib = self.servo_map[name]
+                servo_id = calib['id']
+                rest_pos = calib['rest']
+                
+                # Conversion Rad -> Deg
+                # Attention : msg.position[i] est en radians (ex: 0.2 rad)
+                angle_deg = math.degrees(msg.position[i])
+                
+                # Calcul de la cible physique
+                # Cible = Position Repos + Demande
+                # NOTE : Si un moteur tourne à l'envers par rapport à la simu, faire : rest_pos - angle_deg
+                target_pos = int(rest_pos + angle_deg)
+                
+                # Sécurité (Clamping) selon le JSON
+                target_pos = max(calib['min'], min(calib['max'], target_pos))
+                
+                # Mise à jour du buffer
+                self.current_commands[servo_id] = target_pos
+
+        # Envoi à l'Arduino
+        self.send_to_arduino()
+
+    def send_to_arduino(self):
+        # Format attendu par votre Arduino : "v0;v1;...;v15\n"
+        cmd_string = ";".join(map(str, self.current_commands)) + "\n"
+        
+        try:
+            self.ser.write(cmd_string.encode('utf-8'))
+            # Debug optionnel pour voir ce qu'on envoie
+            # self.get_logger().info(f"Sent: {cmd_string.strip()}")
+        except Exception as e:
+            self.get_logger().warn(f"Echec envoi série: {e}")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ServoBridge()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if node.ser:
+            node.ser.close()
+        node.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

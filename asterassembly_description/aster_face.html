@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aster Cyberpunk — client</title>
+<style>
+/* -------------------- CSS Cyberpunk -------------------- */
+body{
+  margin:0;
+  background:radial-gradient(circle at center,#000010 30%,#000000 100%);
+  display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+.iphone-x{
+  width:812px;height:375px;border-radius:70px;position:relative;
+  background:linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,0,255,0.2));
+  box-shadow:0 0 50px rgba(0,255,255,0.4), 0 0 100px rgba(0,0,255,0.5), inset 0 0 60px rgba(0,255,255,0.2);
+  overflow:hidden;
+}
+.screen{position:absolute;inset:0;border-radius:65px;overflow:hidden;}
+.face-container{
+  position:absolute; top:50%; left:50%;
+  width:1024px; height:1536px; transform:translate(-50%,-50%); z-index:1;
+}
+.face-container img{ width:100%; height:100%; display:block; filter:brightness(1.1) contrast(1.15) saturate(1.3); z-index:1; position:relative;transform:translateY(-80px);}
+.overlay{ position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 70% 40%, rgba(0,255,255,0.25) 0%, transparent 60%),
+    radial-gradient(circle at 30% 60%, rgba(255,0,255,0.2) 0%, transparent 60%);
+  mix-blend-mode: overlay; z-index:2;
+}
+.eye{ position:absolute; width:45px; height:45px; border-radius:50%;
+  transform:translate(-50%,-50%) scaleY(1); z-index:10;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.eye-left{ left:350px; top:654px; }
+.eye-right{ left:640px; top:654px; }
+.mouth-line{ position:absolute; left:480px; top:800px; width:140px; height:10px; transform:translate(-50%,-50%);
+  z-index:10; opacity:0; transition:opacity 0.15s ease;
+}
+.mouth-line svg{ width:100%; height:100%; }
+#mouthCenterGlow{ fill: url(#centerGlow); }
+#aster-status{
+  position:fixed; left:12px; bottom:12px; color:#00ffe0; font-family:Inter,system-ui,-apple-system,Arial;
+  background:rgba(0,0,0,0.35); padding:8px 10px; border-radius:8px; font-size:13px; z-index:9999; pointer-events:none;
+}
+#clear-history-btn {
+    position: fixed; right: 12px; bottom: 12px;
+    background: rgba(255, 0, 0, 0.4); color: white;
+    border: 1px solid #f00; padding: 5px 10px; border-radius: 5px;
+    font-size: 12px; cursor: pointer; z-index: 9999;
+}
+@media (max-width:1100px){
+  .iphone-x{ width:92vw; height:52vw; border-radius:6vw; }
+  .face-container{ width:92vw; height:138vw; }
+  .eye-left{ left:32vw; top:55vw; }
+  .eye-right{ left:60vw; top:55vw; }
+  .eye{ width:4.6vw; height:4.2vw; }
+  .mouth-line{ left:46vw; top:82vw; width:15vw; height:1.8vw; }
+}
+</style>
+</head>
+<body>
+
+<div class="iphone-x" aria-hidden="true">
+  <div class="screen">
+    <div class="face-container">
+      <img src="cyberpunk_face.png" alt="Visage Cyberpunk Futuriste" id="faceImg" />
+      <div class="overlay"></div>
+      <div class="eye eye-left" id="eyeLeft" aria-label="Activer Aster"></div>
+      <div class="eye eye-right" id="eyeRight" aria-label="Activer Aster"></div>
+      <div class="mouth-line" id="mouth">
+        <svg viewBox="0 0 182 16" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <line x1="0" y1="8" x2="182" y2="8" stroke="#0ff" stroke-width="1" stroke-linecap="round"/>
+          <ellipse id="mouthCenterGlow" cx="91" cy="8" rx="20" ry="6" fill="url(#centerGlow)"/>
+          <defs>
+            <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(0,255,255,1)" />
+              <stop offset="100%" stop-color="rgba(0,255,255,0)" />
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="aster-status">Prêt — tape sur un œil pour activer</div>
+<button id="clear-history-btn">Vider l'historique</button>
+
+<script>
+/* ---------------- Config ---------------- */
+// Correction de l'adresse IP vers 192.168.31.237
+const PROXY_URL = "https://192.168.31.237:8443";
+const ASK_ENDPOINT = `${PROXY_URL}/ask`;
+const CLEAR_HISTORY_ENDPOINT = `${PROXY_URL}/clear_history`;
+
+const eyeLeft = document.getElementById('eyeLeft');
+const eyeRight = document.getElementById('eyeRight');
+const eyes = document.querySelectorAll('.eye');
+const mouth = document.getElementById('mouth');
+const mouthCenterGlow = document.getElementById('mouthCenterGlow');
+const statusEl = document.getElementById('aster-status');
+const clearBtn = document.getElementById('clear-history-btn');
+
+let talking=false, mouthInterval=null, eyeInterval=null, recognition=null, frenchVoice=null, isListening=false, currentState='waiting';
+let fullResponseText = "";
+
+const synth = window.speechSynthesis;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+/* ---------------- Animations ---------------- */
+function animateEyesOnce(){ eyes.forEach(e=>e.style.transform='translate(-50%,-50%) scaleY(0.1)'); setTimeout(()=>eyes.forEach(e=>e.style.transform='translate(-50%,-50%) scaleY(1)'),300);}
+eyeInterval = setInterval(animateEyesOnce,3000);
+
+function animateMouthCenter(){ if(!talking) return; const rx=25+Math.random()*80; const ry=6+Math.random()*4; const alpha=0.8+Math.random()*0.5; mouthCenterGlow.setAttribute('rx',rx); mouthCenterGlow.setAttribute('ry',ry); mouthCenterGlow.setAttribute('fill',`rgba(30,240,255,${alpha})`);}
+
+function visualSetListening(){ talking=false; clearInterval(mouthInterval); mouth.style.opacity='0'; eyes.forEach(e=>{ e.style.background='radial-gradient(circle at 50% 30%, #FFA500 0%, #FF8C00 60%, rgba(255,140,0,0) 100%)'; e.style.boxShadow='0 0 20px 8px #FFA500, 0 0 35px 12px #FF8C00'; }); }
+
+function visualSetSpeaking(){ talking=true; mouth.style.opacity='1'; eyes.forEach(e=>{ e.style.background='radial-gradient(circle at 50% 30%, #00ffe0 0%, #0fffbf 60%, rgba(0,255,224,0) 100%)'; e.style.boxShadow='0 0 20px 8px #00ffe0, 0 0 40px 15px #0fffbf'; }); clearInterval(mouthInterval); mouthInterval=setInterval(animateMouthCenter,150); }
+
+function setState(state){
+  currentState=state;
+  if(state==='waiting'){ statusEl.textContent='Prêt — tape sur un œil pour activer'; visualSetListening(); }
+  else if(state==='listening'){ statusEl.textContent='🎙️ Aster écoute...'; visualSetListening(); }
+  else if(state==='generating'){ statusEl.textContent='🤖 Aster réfléchit... (Streaming)'; talking=false; clearInterval(mouthInterval); mouth.style.opacity='0'; }
+  else if(state==='speaking'){ statusEl.textContent='🗣️ Aster parle...'; visualSetSpeaking(); }
+}
+
+/* ---------------- TTS ---------------- */
+function loadVoice(){ const v=synth.getVoices(); frenchVoice=v.find(x=>x.lang&&x.lang.startsWith('fr'))||v.find(x=>x.lang&&x.lang.includes('fr')); }
+if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=loadVoice; loadVoice();
+
+function speak(text){
+  try{synth.cancel();}catch(e){}
+  const u=new SpeechSynthesisUtterance(text);
+  if(frenchVoice) u.voice=frenchVoice;
+  u.lang='fr-FR'; u.rate=1; u.pitch=1;
+  u.onstart=()=>setState('speaking');
+  u.onend=()=>{ setTimeout(()=>{ setState('listening'); startListening(); },250); };
+  synth.speak(u);
+}
+
+/* ---------------- API SSE ---------------- */
+async function callGeminiStream(prompt){
+    fullResponseText="";
+    try{
+        const r=await fetch(ASK_ENDPOINT,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({text: prompt})
+        });
+        visualSetSpeaking();
+        const reader=r.body.getReader();
+        const decoder=new TextDecoder('utf-8');
+        let buffer='';
+        while(true){
+            const {done,value}=await reader.read();
+            if(done) break;
+            buffer+=decoder.decode(value,{stream:true});
+            let events=buffer.split('\n\n');
+            buffer=events.pop();
+            events.forEach(eStr=>{
+                if(!eStr.startsWith('data:')) return;
+                try{
+                    const jsonStr=eStr.substring(5).trim();
+                    if(!jsonStr) return;
+                    const data=JSON.parse(jsonStr);
+                    if(data.chunk) fullResponseText+=data.chunk;
+                    else if(data.error) console.warn("Erreur SSE:",data.error);
+                }catch(err){ console.error("Parsing SSE:",err,eStr);}
+            });
+        }
+        if(fullResponseText.trim()) speak(fullResponseText.trim());
+        else speak("Je n'ai pas reçu de réponse.");
+    }catch(e){ console.error("Erreur fetch SSE:", e); speak("Désolé, une erreur est survenue."); setState('listening'); }
+}
+
+/* ---------------- Reconnaissance vocale ---------------- */
+function initRecognition(){
+  if(!SpeechRecognition){ statusEl.textContent='⚠️ ASR non supporté par ce navigateur.'; return; }
+  recognition=new SpeechRecognition();
+  recognition.lang='fr-FR'; recognition.continuous=false; recognition.interimResults=false;
+  recognition.onresult=async(event)=>{
+      const text=event.results[0][0].transcript.trim();
+      setState('generating'); 
+      await callGeminiStream(text);
+  };
+  recognition.onerror=(event)=>{
+      console.warn("Erreur de reconnaissance:",event.error);
+      if(currentState==='listening' && !synth.speaking) setTimeout(()=>{ startListening(); },800);
+  };
+  recognition.onend=()=>{ if(isListening && currentState==='listening'){ setTimeout(()=>{ try{ recognition.start(); }catch(e){} },50); } };
+}
+function startListening(){ if(!recognition || synth.speaking) return; try{ recognition.start(); isListening=true; setState('listening'); }catch(e){} }
+function stopListening(){ try{ if(recognition) recognition.stop(); }catch(e){} isListening=false; }
+
+/* ---------------- Activation par clic sur yeux ---------------- */
+async function activateByEyeClick(){
+  try{
+    const testUt=new SpeechSynthesisUtterance(" "); testUt.volume=0; synth.speak(testUt);
+    await navigator.mediaDevices.getUserMedia({audio:true});
+    loadVoice();
+    if(SpeechRecognition){ initRecognition(); startListening(); setState('listening'); statusEl.textContent='✅ Aster est prêt et écoute.';}
+    else statusEl.textContent='⚠️ Reconnaissance non supportée par votre navigateur.';
+    eyeLeft.removeEventListener('click', eyeClickHandler);
+    eyeRight.removeEventListener('click', eyeClickHandler);
+  }catch(err){ statusEl.textContent='Autorisation micro requise — réessaie.';}
+}
+function eyeClickHandler(e){ const el=e.currentTarget; el.style.transform='translate(-50%,-50%) scale(0.9)'; setTimeout(()=>el.style.transform='translate(-50%,-50%) scale(1)',120); activateByEyeClick();}
+eyeLeft.addEventListener('click',eyeClickHandler);
+eyeRight.addEventListener('click',eyeClickHandler);
+
+/* ---------------- Effacer historique ---------------- */
+async function clearHistory(){
+    try{
+        const r=await fetch(CLEAR_HISTORY_ENDPOINT,{method:'POST'});
+        if(r.ok){ statusEl.textContent='🗑️ Historique effacé. Nouvelle conversation.'; console.log("Historique effacé."); }
+        else statusEl.textContent='⚠️ Erreur historique.';
+    }catch(e){ statusEl.textContent='⚠️ Erreur réseau pour vider l\'historique.'; }
+    if(currentState!=='listening' && currentState!=='speaking'){ setTimeout(()=>setState('listening'),1500); }
+}
+clearBtn.addEventListener('click',clearHistory);
+
+setState('waiting');
+window.addEventListener('beforeunload',()=>{ stopListening(); synth.cancel(); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="asterassembly">
+
+  <!-- Transmission for joint tete_g_d_joint -->
+  <transmission name="tete_g_d_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="tete_g_d_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="tete_g_d_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint tete_h_b_joint -->
+  <transmission name="tete_h_b_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="tete_h_b_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="tete_h_b_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_droit_de_ar_joint -->
+  <transmission name="bras_droit_de_ar_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_droit_de_ar_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_droit_de_ar_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_droit_h_b_joint -->
+  <transmission name="bras_droit_h_b_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_droit_h_b_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_droit_h_b_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_droit_rot_joint -->
+  <transmission name="bras_droit_rot_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_droit_rot_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_droit_rot_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_droit_coud_joint -->
+  <transmission name="bras_droit_coud_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_droit_coud_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_droit_coud_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_gauche_coude_joint -->
+  <transmission name="bras_gauche_coude_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_gauche_coude_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_gauche_coude_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_gauche_rot_joint -->
+  <transmission name="bras_gauche_rot_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_gauche_rot_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_gauche_rot_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_gauche_h_b_joint -->
+  <transmission name="bras_gauche_h_b_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_gauche_h_b_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_gauche_h_b_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint bras_gauche_de_ar_joint -->
+  <transmission name="bras_gauche_de_ar_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bras_gauche_de_ar_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bras_gauche_de_ar_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint cuisse_gauche_joint -->
+  <transmission name="cuisse_gauche_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="cuisse_gauche_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="cuisse_gauche_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint genou_gauche_joint -->
+  <transmission name="genou_gauche_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="genou_gauche_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="genou_gauche_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint cheville_gauche_joint -->
+  <transmission name="cheville_gauche_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="cheville_gauche_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="cheville_gauche_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint cheville_droite_joint -->
+  <transmission name="cheville_droite_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="cheville_droite_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="cheville_droite_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint genou_droit_joint -->
+  <transmission name="genou_droit_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="genou_droit_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="genou_droit_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Transmission for joint cuisse_droit_joint -->
+  <transmission name="cuisse_droit_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="cuisse_droit_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="cuisse_droit_joint_motor">
+      <hardwareInterface>hardware_interface/ActuatorInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>
