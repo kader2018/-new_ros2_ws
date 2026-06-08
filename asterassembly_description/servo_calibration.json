@@ -7,7 +7,7 @@
         40,
         10,
         80,
-        10,
+        100,
         30,
         10,
         30,
@@ -96,7 +96,7 @@
             "name": "bras_gauche_coude_joint",
             "low_mech_constraint": 100,
             "high_mech_constraint": 180,
-            "rest_position": 10,
+            "rest_position": 100,
             "created": "2025-12-30T20:03:55.678968",
             "last_updated": "2026-05-31T10:06:22.140677"
         },

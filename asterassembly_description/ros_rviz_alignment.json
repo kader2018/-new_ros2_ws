@@ -1,0 +1,118 @@
+{
+    "version": 1,
+    "source_calibration": "servo_calibration.json",
+    "joints": {
+        "bras_droit_de_ar_joint": {
+            "servo_index": 0,
+            "visual_sign": -1.0,
+            "visual_offset_rad": -0.15707963267948966,
+            "note": "",
+            "validated_at": "2026-06-08T19:12:20.955311+00:00"
+        },
+        "bras_droit_h_b_joint": {
+            "servo_index": 1,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "bras_droit_rot_joint": {
+            "servo_index": 2,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": "2026-06-08T20:40:49.621669+00:00"
+        },
+        "bras_droit_coud_joint": {
+            "servo_index": 3,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": "2026-06-08T20:41:24.919193+00:00"
+        },
+        "bras_gauche_de_ar_joint": {
+            "servo_index": 4,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.47123889803846897,
+            "note": "",
+            "validated_at": "2026-06-08T20:43:36.013590+00:00"
+        },
+        "bras_gauche_h_b_joint": {
+            "servo_index": 5,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "bras_gauche_rot_joint": {
+            "servo_index": 6,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "bras_gauche_coude_joint": {
+            "servo_index": 7,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "cuisse_droit_joint": {
+            "servo_index": 8,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "genou_droit_joint": {
+            "servo_index": 9,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "cheville_droite_joint": {
+            "servo_index": 10,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "cuisse_gauche_joint": {
+            "servo_index": 11,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "genou_gauche_joint": {
+            "servo_index": 12,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "cheville_gauche_joint": {
+            "servo_index": 13,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "tete_g_d_joint": {
+            "servo_index": 14,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        },
+        "tete_h_b_joint": {
+            "servo_index": 15,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": null
+        }
+    }
+}

@@ -29,6 +29,7 @@ int targetPos[SERVO_COUNT];
 bool bnoConnected = false;
 bool loxConnected = false;
 bool huskyConnected = false;
+bool telemetryEnabled = true;
 
 // --- TIMING ---
 unsigned long lastSensorMs = 0;
@@ -102,6 +103,16 @@ void handleSerialCommands() {
     String line = Serial.readStringUntil('\n');
     line.trim();
     if (line.length() == 0) continue;
+
+    if (line == "TELEMETRY_OFF") {
+      telemetryEnabled = false;
+      continue;
+    }
+
+    if (line == "TELEMETRY_ON") {
+      telemetryEnabled = true;
+      continue;
+    }
 
     // --- NOUVEAU FORMAT : SÉQUENCE INITIALISATION PROGRESSIVE INDIVIDUELLE (I;id;min;max;rest) ---
     if (line.charAt(0) == 'I') {
@@ -250,7 +261,7 @@ void loop() {
   updateServoMovements();
   
   unsigned long currentMs = millis();
-  if (currentMs - lastSensorMs >= sensorInterval) {
+  if (telemetryEnabled && currentMs - lastSensorMs >= sensorInterval) {
     lastSensorMs = currentMs;
     sendSensorsToROS();
   }
