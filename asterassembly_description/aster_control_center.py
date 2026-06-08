@@ -139,13 +139,13 @@ def main():
     n = AsterNode()
     
     if "--cli" in sys.argv:
-        print("🤖 [Marche] Mode CLI : Boucle de contrôle dédiée activée.")
+        print("[Marche] Mode CLI : publication /joint_states active.")
         try:
-            # On ne lance PAS de thread séparé, on utilise un executor simple
-            # pour éviter les conflits de contexte.
             while rclpy.ok():
-                n.update() # Ton update fait le travail
-                rclpy.spin_once(n, timeout_sec=0.1)
+                n.update()
+                n.pub()
+                rclpy.spin_once(n, timeout_sec=0.0)
+                time.sleep(0.02)
         except KeyboardInterrupt:
             pass
         finally:

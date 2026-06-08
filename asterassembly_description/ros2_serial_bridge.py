@@ -35,7 +35,7 @@ SERIAL_PORTS      = ["/dev/ttyACM0", "/dev/ttyACM1"]
 BAUDRATE          = 115_200
 BRIDGE_DT         = 0.02           # 20 Hz
 MAX_SPEED_DEG_S   = 120.0
-CHANGE_THRESH_DEG = 0.0
+CHANGE_THRESH_DEG = 1.0
 SCALE_JOINT_DEG   = 1.0
 OBSTACLE_DIST_MM  = 250
 
@@ -97,6 +97,7 @@ class AsterSerialBridge(Node):
         self.servo_min:       np.ndarray
         self.servo_max:       np.ndarray
         self.index_from_name: Dict[str, int] = {}
+        self.calib:           dict           = {}
 
         self._load_calibration()
         n = len(self.servo_rest)
@@ -112,6 +113,11 @@ class AsterSerialBridge(Node):
 
         # Buffer lecture série
         self._serial_buf: str = ""
+
+        # Séquences de gestes directs déclenchées par /aster/cmd.
+        self._direct_sequence: List[tuple[np.ndarray, int]] = []
+        self._direct_ticks_left = 0
+        self._direct_active = False
 
         # Publishers
         self.pub_dist   = self.create_publisher(Int32,   "/aster/distance_mm", 10)
@@ -147,6 +153,7 @@ class AsterSerialBridge(Node):
         try:
             with CALIB_PATH.open("r", encoding="utf-8") as f:
                 calib = json.load(f)
+            self.calib = calib
         except Exception as e:
             self.get_logger().error(f"Erreur JSON : {e}")
             self._default_calibration()
@@ -244,6 +251,8 @@ class AsterSerialBridge(Node):
     # ── Callbacks ─────────────────────────────────────────────────────────────
 
     def _joint_cb(self, msg: JointState) -> None:
+        if self._direct_active:
+            return
         target      = self.servo_rest.copy()
         name_to_idx = {n: i for i, n in enumerate(msg.name)}
         for joint_name, servo_idx in self.index_from_name.items():
@@ -260,12 +269,68 @@ class AsterSerialBridge(Node):
 
     def _cmd_cb(self, msg: String) -> None:
         cmd = msg.data.strip()
+        if cmd.startswith("DIRECT_GO:"):
+            pose_name = cmd.split(":", 1)[1].strip().lower()
+            self._queue_direct_pose(pose_name)
+            return
+        if cmd == "REST":
+            self._direct_sequence.clear()
+            self._direct_ticks_left = 0
+            self._direct_active = False
+            self.target_cmd = self.servo_rest.copy()
+            return
         if cmd == "RESET_IMU" and self.ser and self.ser.is_open:
             try:
                 self.ser.write(b"RESET_IMU\n")
                 self.get_logger().info("RESET_IMU envoyé à l'Arduino")
             except serial.SerialException as e:
                 self.get_logger().error(f"Erreur RESET_IMU : {e}")
+
+    def _ticks_for_seconds(self, seconds: float) -> int:
+        return max(1, int(round(seconds / BRIDGE_DT)))
+
+    def _pose_to_array(self, pose_data: dict) -> np.ndarray:
+        cmd = self.servo_rest.copy()
+        servos_config = self.calib.get("servos", {})
+        for i in range(len(cmd)):
+            val = None
+            if isinstance(pose_data, dict):
+                val = pose_data.get(str(i), pose_data.get(i))
+            if val is None:
+                if isinstance(servos_config, dict):
+                    servo_data = servos_config.get(str(i), {})
+                else:
+                    servo_data = servos_config[i] if i < len(servos_config) else {}
+                val = servo_data.get("rest_position", self.servo_rest[i])
+            cmd[i] = float(np.clip(int(val), self.servo_min[i], self.servo_max[i]))
+        return cmd
+
+    def _queue_direct_pose(self, pose_name: str) -> None:
+        predefined = self.calib.get("positions_predefinies", {})
+        data_a = predefined.get(f"{pose_name}_A")
+        data_b = predefined.get(f"{pose_name}_B")
+        data_unique = predefined.get(pose_name)
+
+        if not data_a and not data_b and not data_unique:
+            self.get_logger().warn(f"Pose DIRECT_GO inconnue : {pose_name}")
+            return
+
+        seq: List[tuple[np.ndarray, int]] = []
+        if data_unique and not data_a:
+            seq.append((self._pose_to_array(data_unique), self._ticks_for_seconds(3.0)))
+        else:
+            for cycle in range(2):
+                if data_a:
+                    seq.append((self._pose_to_array(data_a), self._ticks_for_seconds(0.7)))
+                if data_b:
+                    hold = 3.0 if cycle == 1 else 0.7
+                    seq.append((self._pose_to_array(data_b), self._ticks_for_seconds(hold)))
+
+        seq.append((self.servo_rest.copy(), self._ticks_for_seconds(0.5)))
+        self._direct_sequence = seq
+        self._direct_ticks_left = 0
+        self._direct_active = True
+        self.get_logger().info(f"DIRECT_GO reçu : {pose_name}")
 
     # ── Lecture série ─────────────────────────────────────────────────────────
 
@@ -346,6 +411,18 @@ class AsterSerialBridge(Node):
                     self.last_sent_cmd = cmd_int.copy()
                 except Exception as e:
                     self.get_logger().error(f"Échec envoi synchro : {e}")
+
+        if self._direct_active:
+            if self._direct_ticks_left <= 0:
+                if self._direct_sequence:
+                    pose, ticks = self._direct_sequence.pop(0)
+                    self.target_cmd = pose.copy()
+                    self._direct_ticks_left = ticks
+                else:
+                    self._direct_active = False
+                    self.target_cmd = self.servo_rest.copy()
+            else:
+                self._direct_ticks_left -= 1
 
         delta = np.clip(
             self.target_cmd - self.current_cmd,
