@@ -1,0 +1,9 @@
+{
+  "name": "example_candidate_pose",
+  "group": "tete",
+  "description": "Exemple de format temporaire genere plus tard par Gemini. Ce fichier n'est pas une pose finale.",
+  "joints": {
+    "tete_g_d_joint": 0.05,
+    "tete_h_b_joint": 0.05
+  }
+}
