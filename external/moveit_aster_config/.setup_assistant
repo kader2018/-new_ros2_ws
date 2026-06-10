@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: asterassembly_description
+    relative_path: urdf/asterassembly.urdf
+  srdf:
+    relative_path: config/asterassembly.srdf
+  package_settings:
+    author_name: addala
+    author_email: kader.addala@hotmail.fr
+    generated_timestamp: 1770583752

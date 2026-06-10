@@ -1,0 +1,51 @@
+# MoveIt uses this configuration for controller management in fake hardware.
+# Arduino is not used here; execution targets ros2_control mock_components/GenericSystem.
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - bras_droit_controller
+    - bras_gauche_controller
+    - tete_controller
+    - jambes_controller
+
+  bras_droit_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - bras_droit_de_ar_joint
+      - bras_droit_h_b_joint
+      - bras_droit_rot_joint
+      - bras_droit_coud_joint
+
+  bras_gauche_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - bras_gauche_de_ar_joint
+      - bras_gauche_h_b_joint
+      - bras_gauche_rot_joint
+      - bras_gauche_coude_joint
+
+  tete_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - tete_g_d_joint
+      - tete_h_b_joint
+
+  jambes_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - cuisse_droit_joint
+      - genou_droit_joint
+      - cheville_droite_joint
+      - cuisse_gauche_joint
+      - genou_gauche_joint
+      - cheville_gauche_joint

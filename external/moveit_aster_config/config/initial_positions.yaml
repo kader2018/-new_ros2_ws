@@ -1,0 +1,19 @@
+# Default initial positions for asterassembly's ros2_control fake system
+
+initial_positions:
+  bras_droit_de_ar_joint: 0.0
+  bras_droit_h_b_joint: 0.0
+  bras_droit_rot_joint: 0.0
+  bras_droit_coud_joint: 0.0
+  bras_gauche_de_ar_joint: 0.0
+  bras_gauche_h_b_joint: 0.0
+  bras_gauche_rot_joint: 0.0
+  bras_gauche_coude_joint: 0.0
+  tete_g_d_joint: 0.0
+  tete_h_b_joint: 0.0
+  cuisse_droit_joint: 0.0
+  genou_droit_joint: 0.0
+  cheville_droite_joint: 0.0
+  cuisse_gauche_joint: 0.0
+  genou_gauche_joint: 0.0
+  cheville_gauche_joint: 0.0

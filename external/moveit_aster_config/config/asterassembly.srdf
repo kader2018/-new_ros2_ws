@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="asterassembly">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="bras_droit">
+        <joint name="bras_droit_de_ar_joint"/>
+        <joint name="bras_droit_h_b_joint"/>
+        <joint name="bras_droit_rot_joint"/>
+        <joint name="bras_droit_coud_joint"/>
+    </group>
+    <group name="bras_gauche">
+        <joint name="bras_gauche_de_ar_joint"/>
+        <joint name="bras_gauche_h_b_joint"/>
+        <joint name="bras_gauche_rot_joint"/>
+        <joint name="bras_gauche_coude_joint"/>
+    </group>
+    <group name="tete">
+        <joint name="tete_g_d_joint"/>
+        <joint name="tete_h_b_joint"/>
+    </group>
+    <group name="jambes">
+        <joint name="cuisse_droit_joint"/>
+        <joint name="genou_droit_joint"/>
+        <joint name="cheville_droite_joint"/>
+        <joint name="cuisse_gauche_joint"/>
+        <joint name="genou_gauche_joint"/>
+        <joint name="cheville_gauche_joint"/>
+    </group>
+    <group name="corps_haut">
+        <group name="bras_droit"/>
+        <group name="bras_gauche"/>
+        <group name="tete"/>
+    </group>
+    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
+    <group_state name="hello" group="bras_droit">
+        <joint name="bras_droit_coud_joint" value="0.8057"/>
+        <joint name="bras_droit_de_ar_joint" value="0.3621"/>
+        <joint name="bras_droit_h_b_joint" value="-0.2648"/>
+        <joint name="bras_droit_rot_joint" value="-0.4575"/>
+    </group_state>
+    <group_state name="penseur" group="tete">
+        <joint name="tete_g_d_joint" value="0.08"/>
+        <joint name="tete_h_b_joint" value="0.3278"/>
+    </group_state>
+    <group_state name="joie_droit" group="bras_droit">
+        <joint name="bras_droit_coud_joint" value="0"/>
+        <joint name="bras_droit_de_ar_joint" value="2.1816"/>
+        <joint name="bras_droit_h_b_joint" value="-0.3024"/>
+        <joint name="bras_droit_rot_joint" value="0"/>
+    </group_state>
+    <group_state name="repos" group="bras_droit">
+        <joint name="bras_droit_coud_joint" value="0"/>
+        <joint name="bras_droit_de_ar_joint" value="0"/>
+        <joint name="bras_droit_h_b_joint" value="0"/>
+        <joint name="bras_droit_rot_joint" value="0"/>
+    </group_state>
+    <group_state name="joie_gauche" group="bras_gauche">
+        <joint name="bras_gauche_coude_joint" value="0"/>
+        <joint name="bras_gauche_de_ar_joint" value="-2.3561"/>
+        <joint name="bras_gauche_h_b_joint" value="-0.3684"/>
+        <joint name="bras_gauche_rot_joint" value="0"/>
+    </group_state>
+    <group_state name="exaltation" group="corps_haut">
+        <joint name="bras_droit_coud_joint" value="0"/>
+        <joint name="bras_droit_de_ar_joint" value="-0.1789"/>
+        <joint name="bras_droit_h_b_joint" value="-2.7843"/>
+        <joint name="bras_droit_rot_joint" value="0"/>
+        <joint name="bras_gauche_coude_joint" value="0"/>
+        <joint name="bras_gauche_de_ar_joint" value="0"/>
+        <joint name="bras_gauche_h_b_joint" value="-2.7983"/>
+        <joint name="bras_gauche_rot_joint" value="-0.009"/>
+        <joint name="tete_g_d_joint" value="0"/>
+        <joint name="tete_h_b_joint" value="-0.5419"/>
+    </group_state>
+    <group_state name="calin" group="corps_haut">
+        <joint name="bras_droit_coud_joint" value="-0.0995"/>
+        <joint name="bras_droit_de_ar_joint" value="1.0997"/>
+        <joint name="bras_droit_h_b_joint" value="-0.4528"/>
+        <joint name="bras_droit_rot_joint" value="0"/>
+        <joint name="bras_gauche_coude_joint" value="0.0457"/>
+        <joint name="bras_gauche_de_ar_joint" value="-1.0332"/>
+        <joint name="bras_gauche_h_b_joint" value="-0.6721"/>
+        <joint name="bras_gauche_rot_joint" value="0.0207"/>
+        <joint name="tete_g_d_joint" value="0.08"/>
+        <joint name="tete_h_b_joint" value="0.2323"/>
+    </group_state>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="base_link"/>
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="av_bras_droit_1" link2="bras_droit_1" reason="Adjacent"/>
+    <disable_collisions link1="av_bras_droit_1" link2="bras_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_droit_1" link2="clavi_droite_1" reason="Never"/>
+    <disable_collisions link1="av_bras_droit_1" link2="clavi_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_droit_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="av_bras_droit_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_droit_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="bras_droit_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="bras_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="clavi_droite_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="clavi_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="av_bras_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="base_link" link2="clavi_droite_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="clavi_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="cuisse_droit_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="cuisse_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="base_link" link2="nuque_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="bras_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="clavi_droite_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="clavi_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="cuisse_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="cuisse_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="epaule_droite_1" reason="Adjacent"/>
+    <disable_collisions link1="bras_droit_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_droit_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="clavi_droite_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="clavi_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="cuisse_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="cuisse_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="epaule_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="bras_gauche_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="bras_gauche_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="clavi_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="cuisse_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="cuisse_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="epaule_droite_1" reason="Adjacent"/>
+    <disable_collisions link1="clavi_droite_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_droite_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="cuisse_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="cuisse_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="epaule_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="clavi_gauche_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="clavi_gauche_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="cuisse_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="cuisse_droit_1" link2="tibia_droit_1" reason="Adjacent"/>
+    <disable_collisions link1="cuisse_droit_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="epaule_droite_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="cuisse_gauche_1" link2="tibia_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="epaule_droite_1" link2="epaule_gauche_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="epaule_droite_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="nuque_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="epaule_gauche_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="nuque_1" link2="pied_droit_1" reason="Never"/>
+    <disable_collisions link1="nuque_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="nuque_1" link2="tete_1" reason="Adjacent"/>
+    <disable_collisions link1="nuque_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="nuque_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="pied_droit_1" link2="pied_gauche_1" reason="Never"/>
+    <disable_collisions link1="pied_droit_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="pied_droit_1" link2="tibia_droit_1" reason="Adjacent"/>
+    <disable_collisions link1="pied_droit_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="pied_gauche_1" link2="tete_1" reason="Never"/>
+    <disable_collisions link1="pied_gauche_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="pied_gauche_1" link2="tibia_gauche_1" reason="Adjacent"/>
+    <disable_collisions link1="tete_1" link2="tibia_droit_1" reason="Never"/>
+    <disable_collisions link1="tete_1" link2="tibia_gauche_1" reason="Never"/>
+    <disable_collisions link1="tibia_droit_1" link2="tibia_gauche_1" reason="Never"/>
+</robot>

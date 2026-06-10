@@ -1,0 +1,93 @@
+# This config file is used by ros2_control
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    bras_droit_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    bras_gauche_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    tete_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    jambes_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    corps_haut_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+bras_droit_controller:
+  ros__parameters:
+    joints:
+      - bras_droit_de_ar_joint
+      - bras_droit_h_b_joint
+      - bras_droit_rot_joint
+      - bras_droit_coud_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
+
+bras_gauche_controller:
+  ros__parameters:
+    joints:
+      - bras_gauche_de_ar_joint
+      - bras_gauche_h_b_joint
+      - bras_gauche_rot_joint
+      - bras_gauche_coude_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
+
+tete_controller:
+  ros__parameters:
+    joints:
+      - tete_g_d_joint
+      - tete_h_b_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
+
+jambes_controller:
+  ros__parameters:
+    joints:
+      - cuisse_droit_joint
+      - genou_droit_joint
+      - cheville_droite_joint
+      - cuisse_gauche_joint
+      - genou_gauche_joint
+      - cheville_gauche_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
+
+corps_haut_controller:
+  ros__parameters:
+    joints:
+      - bras_droit_de_ar_joint
+      - bras_droit_h_b_joint
+      - bras_droit_rot_joint
+      - bras_droit_coud_joint
+      - bras_gauche_de_ar_joint
+      - bras_gauche_h_b_joint
+      - bras_gauche_rot_joint
+      - bras_gauche_coude_joint
+      - tete_g_d_joint
+      - tete_h_b_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
