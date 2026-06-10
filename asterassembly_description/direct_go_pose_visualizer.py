@@ -23,6 +23,7 @@ from sensor_msgs.msg import JointState
 
 SCRIPT_DIR = Path(__file__).parent.absolute()
 CALIB_PATH = SCRIPT_DIR / "servo_calibration.json"
+ALIGNMENT_PATH = SCRIPT_DIR / "ros_rviz_alignment.json"
 
 POSE_ORDER = ["bonjour", "oui_A", "oui_B", "non_A", "non_B", "pense"]
 REST_POSE_NAME = "rest"
@@ -79,12 +80,21 @@ def parse_sign_overrides(overrides: List[str]) -> Dict[str, float]:
 
 
 class DirectGoPoseLibrary:
-    def __init__(self, calib_path: Path, sign_overrides: Optional[Dict[str, float]] = None) -> None:
+    def __init__(
+        self,
+        calib_path: Path,
+        alignment_path: Path,
+        sign_overrides: Optional[Dict[str, float]] = None,
+    ) -> None:
         if not calib_path.exists():
             raise FileNotFoundError(f"Calibration file not found: {calib_path}")
         self.calib_path = calib_path
         self.calib = json.loads(calib_path.read_text(encoding="utf-8"))
+        self.alignment = self._load_alignment(alignment_path)
         self.sign_table = dict(VISUALIZER_SIGN_TABLE)
+        for joint_name, entry in self.alignment.items():
+            if "visual_sign" in entry:
+                self.sign_table[joint_name] = float(entry.get("visual_sign", 1.0))
         if sign_overrides:
             unknown = [name for name in sign_overrides if name not in self.sign_table]
             if unknown:
@@ -95,6 +105,21 @@ class DirectGoPoseLibrary:
         self.servo_min: List[float] = []
         self.servo_max: List[float] = []
         self._load_servos()
+
+    def _load_alignment(self, alignment_path: Path) -> Dict[str, dict]:
+        if not alignment_path.exists():
+            return {}
+        data = json.loads(alignment_path.read_text(encoding="utf-8"))
+        return data.get("joints", {})
+
+    def _alignment_entry(self, joint_name: str) -> dict:
+        return self.alignment.get(joint_name, {})
+
+    def _visual_scale(self, joint_name: str) -> float:
+        return float(self._alignment_entry(joint_name).get("visual_scale", 1.0))
+
+    def _visual_offset_rad(self, joint_name: str) -> float:
+        return float(self._alignment_entry(joint_name).get("visual_offset_rad", 0.0))
 
     def _load_servos(self) -> None:
         servos_raw = self.calib.get("servos", {})
@@ -126,13 +151,19 @@ class DirectGoPoseLibrary:
         return [pose for pose in POSE_ORDER if pose in predefined]
 
     def rest_positions(self) -> Tuple[List[str], List[float]]:
-        return self.joint_names, [0.0 for _ in self.joint_names]
+        positions = [
+            self.servo_deg_to_joint_rad(joint_name, self.servo_rest[idx])
+            for idx, joint_name in enumerate(self.joint_names)
+        ]
+        return self.joint_names, positions
 
     def servo_deg_to_joint_rad(self, joint_name: str, servo_deg: float) -> float:
         idx = self.joint_names.index(joint_name)
         servo_eff = clamp(float(servo_deg), self.servo_min[idx], self.servo_max[idx])
         sign = self.sign_table.get(joint_name, +1.0)
-        return math.radians((servo_eff - self.servo_rest[idx]) * sign / SCALE_JOINT_DEG)
+        scale = self._visual_scale(joint_name)
+        offset = self._visual_offset_rad(joint_name)
+        return math.radians((servo_eff - self.servo_rest[idx]) * sign * scale / SCALE_JOINT_DEG) + offset
 
     def pose_to_joint_positions(self, pose_name: str) -> Tuple[List[str], List[float]]:
         if pose_name == REST_POSE_NAME:
@@ -157,7 +188,7 @@ class DirectGoPoseLibrary:
         names, positions = self.rest_positions()
         idx = self.joint_names.index(joint_name)
         sign = -1.0 if invert else +1.0
-        positions[idx] = math.radians(delta_deg * sign)
+        positions[idx] += math.radians(delta_deg * sign)
         return names, positions
 
     def describe_rest_mismatches(self) -> List[str]:
@@ -258,6 +289,11 @@ def parse_args() -> argparse.Namespace:
         help="Path to servo_calibration.json.",
     )
     parser.add_argument(
+        "--alignment",
+        default=str(ALIGNMENT_PATH),
+        help="Path to ros_rviz_alignment.json.",
+    )
+    parser.add_argument(
         "--sign",
         action="append",
         default=[],
@@ -295,7 +331,7 @@ def main() -> int:
 
     try:
         sign_overrides = parse_sign_overrides(args.sign)
-        pose_library = DirectGoPoseLibrary(Path(args.calibration), sign_overrides)
+        pose_library = DirectGoPoseLibrary(Path(args.calibration), Path(args.alignment), sign_overrides)
     except Exception as exc:
         print(f"Failed to load DIRECT_GO visualizer: {exc}", file=sys.stderr)
         return 1

@@ -152,6 +152,37 @@ class ServoCalibration:
     def rest_positions_int(self) -> List[int]:
         return [int(round(servo["rest"])) for servo in self.servos]
 
+    def set_mechanical_value(self, servo_index: int, key: str, value: float) -> None:
+        if key not in {"min", "max", "rest"}:
+            raise ValueError(f"Unsupported mechanical key: {key}")
+        servo = self.servos[servo_index]
+        value = float(clamp(value, 0.0, 180.0))
+        if key == "min" and value > servo["max"]:
+            raise ValueError("Le MIN reel ne peut pas etre superieur au MAX reel actuel")
+        if key == "max" and value < servo["min"]:
+            raise ValueError("Le MAX reel ne peut pas etre inferieur au MIN reel actuel")
+        if key == "rest" and not servo["min"] <= value <= servo["max"]:
+            raise ValueError("Le REPOS reel doit rester entre MIN reel et MAX reel")
+        servo[key] = value
+        if key in {"min", "max"} and not servo["min"] <= servo["rest"] <= servo["max"]:
+            servo["rest"] = clamp(servo["rest"], servo["min"], servo["max"])
+
+    def save(self) -> None:
+        raw = self.data.get("servos", {})
+        for servo in self.servos:
+            idx = servo["index"]
+            raw_servo = raw[str(idx)] if isinstance(raw, dict) else raw[idx]
+            raw_servo["low_mech_constraint"] = float(servo["min"])
+            raw_servo["high_mech_constraint"] = float(servo["max"])
+            raw_servo["rest_position"] = float(servo["rest"])
+        rest_positions = self.data.get("rest_positions")
+        if isinstance(rest_positions, list):
+            for servo in self.servos:
+                idx = servo["index"]
+                if idx < len(rest_positions):
+                    rest_positions[idx] = int(round(servo["rest"]))
+        self.path.write_text(json.dumps(self.data, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+
 
 class AlignmentStore:
     def __init__(self, path: Path, calibration: ServoCalibration) -> None:
@@ -178,6 +209,7 @@ class AlignmentStore:
             entry = joints.setdefault(joint, {})
             entry.setdefault("servo_index", servo["index"])
             entry.setdefault("visual_sign", 1.0)
+            entry.setdefault("visual_scale", 1.0)
             entry.setdefault("visual_offset_rad", 0.0)
             entry.setdefault("note", "")
             entry.setdefault("validated_at", None)
@@ -185,9 +217,17 @@ class AlignmentStore:
     def entry(self, joint_name: str) -> dict:
         return self.data["joints"][joint_name]
 
-    def set_entry(self, joint_name: str, visual_sign: float, visual_offset_rad: float, note: str) -> None:
+    def set_entry(
+        self,
+        joint_name: str,
+        visual_sign: float,
+        visual_scale: float,
+        visual_offset_rad: float,
+        note: str,
+    ) -> None:
         entry = self.entry(joint_name)
         entry["visual_sign"] = float(visual_sign)
+        entry["visual_scale"] = float(visual_scale)
         entry["visual_offset_rad"] = float(visual_offset_rad)
         entry["note"] = note
         entry["validated_at"] = datetime.now(timezone.utc).isoformat()
@@ -418,8 +458,9 @@ class AlignmentRosNode(Node):
     def servo_to_joint_rad(self, servo: dict, servo_angle: float) -> float:
         entry = self.alignment.entry(servo["name"])
         visual_sign = float(entry.get("visual_sign", 1.0))
+        visual_scale = float(entry.get("visual_scale", 1.0))
         offset = float(entry.get("visual_offset_rad", 0.0))
-        return math.radians((servo_angle - servo["rest"]) * visual_sign) + offset
+        return math.radians((servo_angle - servo["rest"]) * visual_sign * visual_scale) + offset
 
     def publish_joint_states(self) -> None:
         names = self.calibration.joint_names
@@ -464,7 +505,7 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
         self._shutting_down = False
 
         self.setWindowTitle("ASTER - Calibration alignement RViz")
-        self.resize(760, 360)
+        self.resize(900, 560)
         self._build_ui()
         self._set_controls_enabled(False)
         self._load_servo(0, send_rest=False)
@@ -517,56 +558,91 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
         self.info_label = QtWidgets.QLabel("")
         root.addWidget(self.info_label)
 
-        angle_row = QtWidgets.QHBoxLayout()
-        self.min_button = QtWidgets.QPushButton("Min")
-        self.rest_button = QtWidgets.QPushButton("Repos")
-        self.max_button = QtWidgets.QPushButton("Max")
-        self.min_button.clicked.connect(lambda: self._set_angle_to_key("min"))
-        self.rest_button.clicked.connect(lambda: self._set_angle_to_key("rest"))
-        self.max_button.clicked.connect(lambda: self._set_angle_to_key("max"))
-        angle_row.addWidget(self.min_button)
-        angle_row.addWidget(self.rest_button)
-        angle_row.addWidget(self.max_button)
-        root.addLayout(angle_row)
+        real_group = QtWidgets.QGroupBox("ZONE 1 - Calibration du reel")
+        real_layout = QtWidgets.QGridLayout(real_group)
+        self.real_min_button = QtWidgets.QPushButton("Aller MIN reel")
+        self.real_rest_button = QtWidgets.QPushButton("Aller REPOS reel")
+        self.real_max_button = QtWidgets.QPushButton("Aller MAX reel")
+        self.step_minus_button = QtWidgets.QPushButton("-5 deg")
+        self.step_plus_button = QtWidgets.QPushButton("+5 deg")
+        self.set_min_button = QtWidgets.QPushButton("Definir actuel = MIN reel")
+        self.set_rest_button = QtWidgets.QPushButton("Definir actuel = REPOS reel")
+        self.set_max_button = QtWidgets.QPushButton("Definir actuel = MAX reel")
+        self.save_calibration_button = QtWidgets.QPushButton("Sauvegarder servo_calibration.json")
 
-        slider_row = QtWidgets.QHBoxLayout()
-        self.angle_label = QtWidgets.QLabel("Angle: 0 deg")
+        self.real_min_button.clicked.connect(lambda: self._set_real_angle_to_key("min"))
+        self.real_rest_button.clicked.connect(lambda: self._set_real_angle_to_key("rest"))
+        self.real_max_button.clicked.connect(lambda: self._set_real_angle_to_key("max"))
+        self.step_minus_button.clicked.connect(lambda: self._step_real_angle(-5))
+        self.step_plus_button.clicked.connect(lambda: self._step_real_angle(+5))
+        self.set_min_button.clicked.connect(lambda: self._define_current_as_mechanical("min"))
+        self.set_rest_button.clicked.connect(lambda: self._define_current_as_mechanical("rest"))
+        self.set_max_button.clicked.connect(lambda: self._define_current_as_mechanical("max"))
+        self.save_calibration_button.clicked.connect(self._save_physical_calibration)
+
+        real_layout.addWidget(self.real_min_button, 0, 0)
+        real_layout.addWidget(self.real_rest_button, 0, 1)
+        real_layout.addWidget(self.real_max_button, 0, 2)
+        real_layout.addWidget(self.step_minus_button, 1, 0)
+        real_layout.addWidget(self.step_plus_button, 1, 1)
+        real_layout.addWidget(self.set_min_button, 2, 0)
+        real_layout.addWidget(self.set_rest_button, 2, 1)
+        real_layout.addWidget(self.set_max_button, 2, 2)
+
+        self.angle_label = QtWidgets.QLabel("Angle reel: 0 deg")
         self.angle_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.angle_slider.valueChanged.connect(self._on_angle_changed)
-        self.angle_slider.sliderReleased.connect(self._send_current_angle_force)
-        slider_row.addWidget(self.angle_label)
-        slider_row.addWidget(self.angle_slider, 1)
-        root.addLayout(slider_row)
+        self.angle_slider.setRange(0, 180)
+        self.angle_slider.valueChanged.connect(self._on_real_angle_changed)
+        self.angle_slider.sliderReleased.connect(self._send_current_real_angle_force)
+        real_layout.addWidget(self.angle_label, 3, 0)
+        real_layout.addWidget(self.angle_slider, 3, 1, 1, 2)
+        real_layout.addWidget(self.save_calibration_button, 4, 2)
+        root.addWidget(real_group)
 
-        align_group = QtWidgets.QGroupBox("Correction RViz uniquement")
+        align_group = QtWidgets.QGroupBox("ZONE 2 - Alignement RViz sur le reel")
         align_layout = QtWidgets.QGridLayout(align_group)
+        self.rviz_min_button = QtWidgets.QPushButton("Afficher RViz MIN")
+        self.rviz_rest_button = QtWidgets.QPushButton("Afficher RViz REPOS")
+        self.rviz_max_button = QtWidgets.QPushButton("Afficher RViz MAX")
+        self.rviz_min_button.clicked.connect(lambda: self._set_rviz_angle_to_key("min"))
+        self.rviz_rest_button.clicked.connect(lambda: self._set_rviz_angle_to_key("rest"))
+        self.rviz_max_button.clicked.connect(lambda: self._set_rviz_angle_to_key("max"))
+        align_layout.addWidget(self.rviz_min_button, 0, 0)
+        align_layout.addWidget(self.rviz_rest_button, 0, 1)
+        align_layout.addWidget(self.rviz_max_button, 0, 2)
+
         self.normal_button = QtWidgets.QPushButton("RViz normal")
         self.invert_button = QtWidgets.QPushButton("RViz inverse")
         self.normal_button.clicked.connect(lambda: self._set_visual_sign(+1.0))
         self.invert_button.clicked.connect(lambda: self._set_visual_sign(-1.0))
-        align_layout.addWidget(self.normal_button, 0, 0)
-        align_layout.addWidget(self.invert_button, 0, 1)
+        align_layout.addWidget(self.normal_button, 1, 0)
+        align_layout.addWidget(self.invert_button, 1, 1)
 
-        align_layout.addWidget(QtWidgets.QLabel("Offset RViz (deg)"), 1, 0)
+        align_layout.addWidget(QtWidgets.QLabel("Scale RViz"), 2, 0)
+        self.scale_spin = QtWidgets.QDoubleSpinBox()
+        self.scale_spin.setRange(0.05, 5.0)
+        self.scale_spin.setDecimals(3)
+        self.scale_spin.setSingleStep(0.05)
+        self.scale_spin.valueChanged.connect(self._on_scale_changed)
+        align_layout.addWidget(self.scale_spin, 2, 1)
+
+        align_layout.addWidget(QtWidgets.QLabel("Offset RViz (deg)"), 3, 0)
         self.offset_spin = QtWidgets.QDoubleSpinBox()
         self.offset_spin.setRange(-180.0, 180.0)
         self.offset_spin.setDecimals(2)
         self.offset_spin.setSingleStep(1.0)
         self.offset_spin.valueChanged.connect(self._on_offset_changed)
-        align_layout.addWidget(self.offset_spin, 1, 1)
+        align_layout.addWidget(self.offset_spin, 3, 1)
 
-        align_layout.addWidget(QtWidgets.QLabel("Note"), 2, 0)
+        align_layout.addWidget(QtWidgets.QLabel("Note"), 4, 0)
         self.note_edit = QtWidgets.QLineEdit()
         self.note_edit.setPlaceholderText("Validation physique du mouvement reel")
-        align_layout.addWidget(self.note_edit, 2, 1)
-        root.addWidget(align_group)
+        align_layout.addWidget(self.note_edit, 4, 1, 1, 2)
 
-        save_row = QtWidgets.QHBoxLayout()
-        self.save_button = QtWidgets.QPushButton("Sauvegarder alignement")
+        self.save_button = QtWidgets.QPushButton("Sauvegarder ros_rviz_alignment.json")
         self.save_button.clicked.connect(self._save_alignment)
-        save_row.addStretch(1)
-        save_row.addWidget(self.save_button)
-        root.addLayout(save_row)
+        align_layout.addWidget(self.save_button, 5, 2)
+        root.addWidget(align_group)
 
     def _check_rviz_status(self) -> None:
         launch_pids = rviz_launch_pids()
@@ -672,12 +748,22 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
     def _set_controls_enabled(self, enabled: bool) -> None:
         widgets = [
             self.servo_combo,
-            self.min_button,
-            self.rest_button,
-            self.max_button,
+            self.real_min_button,
+            self.real_rest_button,
+            self.real_max_button,
+            self.step_minus_button,
+            self.step_plus_button,
+            self.set_min_button,
+            self.set_rest_button,
+            self.set_max_button,
+            self.save_calibration_button,
             self.angle_slider,
+            self.rviz_min_button,
+            self.rviz_rest_button,
+            self.rviz_max_button,
             self.normal_button,
             self.invert_button,
+            self.scale_spin,
             self.offset_spin,
             self.note_edit,
             self.save_button,
@@ -776,57 +862,96 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
         servo = self._current_servo()
         entry = self.alignment.entry(servo["name"])
         self._updating_widgets = True
-        self.angle_slider.setMinimum(int(round(servo["min"])))
-        self.angle_slider.setMaximum(int(round(servo["max"])))
+        self.angle_slider.setRange(0, 180)
         self.angle_slider.setValue(int(round(servo["rest"])))
+        self.scale_spin.setValue(float(entry.get("visual_scale", 1.0)))
         self.offset_spin.setValue(math.degrees(float(entry.get("visual_offset_rad", 0.0))))
         self.note_edit.setText(str(entry.get("note", "")))
         self._updating_widgets = False
         self._update_info_label()
         self.ros_node.set_selected(servo_index, float(self.angle_slider.value()))
         if send_rest:
-            self._send_current_angle_force()
+            self._send_current_real_angle_force()
 
     def _update_info_label(self) -> None:
         servo = self._current_servo()
         entry = self.alignment.entry(servo["name"])
         self.info_label.setText(
-            f"min={servo['min']:g} deg | repos={servo['rest']:g} deg | max={servo['max']:g} deg | "
-            f"visual_sign={float(entry.get('visual_sign', 1.0)):+g} | "
+            f"REEL min={servo['min']:g} deg | repos={servo['rest']:g} deg | max={servo['max']:g} deg | "
+            f"RViz sign={float(entry.get('visual_sign', 1.0)):+g} | "
+            f"scale={float(entry.get('visual_scale', 1.0)):.3g} | "
             f"offset={math.degrees(float(entry.get('visual_offset_rad', 0.0))):+.2f} deg"
         )
         self.angle_label.setText(f"Angle reel: {self.angle_slider.value()} deg")
 
-    def _set_angle_to_key(self, key: str) -> None:
+    def _set_real_angle_to_key(self, key: str) -> None:
         if not self.rest_synchronized:
             return
         servo = self._current_servo()
         value = int(round(servo[key]))
+        self._set_real_angle(value, force=True)
+
+    def _step_real_angle(self, delta: int) -> None:
+        if not self.rest_synchronized:
+            return
+        self._set_real_angle(int(self.angle_slider.value()) + int(delta), force=True)
+
+    def _set_real_angle(self, value: int, force: bool) -> None:
+        servo = self._current_servo()
+        value = int(clamp(value, 0, 180))
         self._updating_widgets = True
         self.angle_slider.setValue(value)
         self._updating_widgets = False
         self.angle_label.setText(f"Angle reel: {value} deg")
         self.ros_node.set_selected(servo["index"], float(value))
-        self.send_angle_requested.emit(servo["index"], value, True)
-        self.status_label.setText(f"Envoi S{servo['index']}:{value}")
+        self.send_angle_requested.emit(servo["index"], value, force)
+        self.status_label.setText(f"Envoi reel S{servo['index']}:{value}")
 
-    def _on_angle_changed(self, value: int) -> None:
+    def _on_real_angle_changed(self, value: int) -> None:
         if self._updating_widgets or not self.rest_synchronized:
             return
         servo = self._current_servo()
         self.angle_label.setText(f"Angle reel: {value} deg")
         self.ros_node.set_selected(servo["index"], float(value))
         self.send_angle_requested.emit(servo["index"], value, False)
-        self.status_label.setText(f"Demande S{servo['index']}:{value} | RViz publie en parallele")
+        self.status_label.setText(f"Demande reel S{servo['index']}:{value} | RViz suit la position reelle")
 
-    def _send_current_angle_force(self) -> None:
+    def _send_current_real_angle_force(self) -> None:
         if not self.rest_synchronized:
             return
         servo = self._current_servo()
         value = int(self.angle_slider.value())
         self.ros_node.set_selected(servo["index"], float(value))
         self.send_angle_requested.emit(servo["index"], value, True)
-        self.status_label.setText(f"Envoi S{servo['index']}:{value}")
+        self.status_label.setText(f"Envoi reel S{servo['index']}:{value}")
+
+    def _define_current_as_mechanical(self, key: str) -> None:
+        servo = self._current_servo()
+        value = float(self.angle_slider.value())
+        try:
+            self.calibration.set_mechanical_value(servo["index"], key, value)
+        except Exception as exc:
+            self.status_label.setText(f"Calibration reelle refusee: {exc}")
+            return
+        self.ros_node.set_selected(servo["index"], value)
+        self._update_info_label()
+        label = {"min": "MIN", "max": "MAX", "rest": "REPOS"}[key]
+        self.status_label.setText(f"{servo['name']}: position actuelle definie comme {label} reel ({value:g} deg)")
+
+    def _save_physical_calibration(self) -> None:
+        try:
+            self.calibration.save()
+            self.ros_node.set_all_rest()
+            self.status_label.setText(f"Calibration reelle sauvegardee: {self.calibration.path}")
+            self._update_info_label()
+        except Exception as exc:
+            self.status_label.setText(f"Erreur sauvegarde calibration reelle: {exc}")
+
+    def _set_rviz_angle_to_key(self, key: str) -> None:
+        servo = self._current_servo()
+        value = float(servo[key])
+        self.ros_node.set_selected(servo["index"], value)
+        self.status_label.setText(f"RViz uniquement: affichage {servo['name']} {key}={value:g} deg")
 
     def _set_visual_sign(self, sign: float) -> None:
         servo = self._current_servo()
@@ -835,6 +960,15 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
         self.ros_node.set_selected(servo["index"], float(self.angle_slider.value()))
         self._update_info_label()
         self.status_label.setText(f"Correction RViz appliquee: {servo['name']} visual_sign={sign:+g}")
+
+    def _on_scale_changed(self, value: float) -> None:
+        if self._updating_widgets:
+            return
+        servo = self._current_servo()
+        entry = self.alignment.entry(servo["name"])
+        entry["visual_scale"] = float(value)
+        self.ros_node.set_selected(servo["index"], float(self.angle_slider.value()))
+        self._update_info_label()
 
     def _on_offset_changed(self, value_deg: float) -> None:
         if self._updating_widgets:
@@ -849,9 +983,10 @@ class CalibrationAlignmentGui(QtWidgets.QWidget):
         servo = self._current_servo()
         entry = self.alignment.entry(servo["name"])
         visual_sign = float(entry.get("visual_sign", 1.0))
+        visual_scale = float(self.scale_spin.value())
         visual_offset_rad = math.radians(float(self.offset_spin.value()))
         note = self.note_edit.text().strip()
-        self.alignment.set_entry(servo["name"], visual_sign, visual_offset_rad, note)
+        self.alignment.set_entry(servo["name"], visual_sign, visual_scale, visual_offset_rad, note)
         try:
             self.alignment.save()
             self.status_label.setText(f"Alignement sauvegarde: {self.alignment.path}")

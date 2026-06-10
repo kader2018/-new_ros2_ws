@@ -5,114 +5,130 @@
         "bras_droit_de_ar_joint": {
             "servo_index": 0,
             "visual_sign": -1.0,
-            "visual_offset_rad": -0.15707963267948966,
+            "visual_offset_rad": -0.12217304763960307,
             "note": "",
-            "validated_at": "2026-06-08T19:12:20.955311+00:00"
+            "validated_at": "2026-06-09T19:59:50.606247+00:00",
+            "visual_scale": 0.05
         },
         "bras_droit_h_b_joint": {
             "servo_index": 1,
             "visual_sign": 1.0,
-            "visual_offset_rad": 0.0,
+            "visual_offset_rad": -0.05235987755982989,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-09T20:03:08.680151+00:00",
+            "visual_scale": 1.0
         },
         "bras_droit_rot_joint": {
             "servo_index": 2,
-            "visual_sign": -1.0,
-            "visual_offset_rad": 0.0,
-            "note": "",
-            "validated_at": "2026-06-08T20:40:49.621669+00:00"
-        },
-        "bras_droit_coud_joint": {
-            "servo_index": 3,
-            "visual_sign": -1.0,
-            "visual_offset_rad": 0.0,
-            "note": "",
-            "validated_at": "2026-06-08T20:41:24.919193+00:00"
-        },
-        "bras_gauche_de_ar_joint": {
-            "servo_index": 4,
-            "visual_sign": -1.0,
-            "visual_offset_rad": 0.47123889803846897,
-            "note": "",
-            "validated_at": "2026-06-08T20:43:36.013590+00:00"
-        },
-        "bras_gauche_h_b_joint": {
-            "servo_index": 5,
-            "visual_sign": -1.0,
-            "visual_offset_rad": 0.0,
-            "note": "",
-            "validated_at": null
-        },
-        "bras_gauche_rot_joint": {
-            "servo_index": 6,
             "visual_sign": 1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-08T20:40:49.621669+00:00",
+            "visual_scale": 1.0
+        },
+        "bras_droit_coud_joint": {
+            "servo_index": 3,
+            "visual_sign": 1.0,
+            "visual_offset_rad": -0.19198621771937624,
+            "note": "",
+            "validated_at": "2026-06-09T20:07:45.285996+00:00",
+            "visual_scale": 1.0
+        },
+        "bras_gauche_de_ar_joint": {
+            "servo_index": 4,
+            "visual_sign": 1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": "2026-06-10T11:07:17.621863+00:00",
+            "visual_scale": 1.0
+        },
+        "bras_gauche_h_b_joint": {
+            "servo_index": 5,
+            "visual_sign": 1.0,
+            "visual_offset_rad": -0.06981317007977318,
+            "note": "",
+            "validated_at": "2026-06-10T11:40:56.314411+00:00",
+            "visual_scale": 1.0
+        },
+        "bras_gauche_rot_joint": {
+            "servo_index": 6,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.0,
+            "note": "",
+            "validated_at": "2026-06-09T20:14:53.627563+00:00",
+            "visual_scale": 1.0
         },
         "bras_gauche_coude_joint": {
             "servo_index": 7,
             "visual_sign": 1.0,
-            "visual_offset_rad": 0.0,
+            "visual_offset_rad": 0.05235987755982989,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-10T15:50:14.777390+00:00",
+            "visual_scale": 1.0
         },
         "cuisse_droit_joint": {
             "servo_index": 8,
-            "visual_sign": 1.0,
-            "visual_offset_rad": 0.0,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.017453292519943295,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-08T21:34:19.324208+00:00",
+            "visual_scale": 1.0
         },
         "genou_droit_joint": {
             "servo_index": 9,
-            "visual_sign": 1.0,
-            "visual_offset_rad": 0.0,
+            "visual_sign": -1.0,
+            "visual_offset_rad": 0.20943951023931956,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-10T15:28:50.889576+00:00",
+            "visual_scale": 0.19999999999999968
         },
         "cheville_droite_joint": {
             "servo_index": 10,
             "visual_sign": 1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-10T15:30:11.457402+00:00",
+            "visual_scale": 0.6499999999999997
         },
         "cuisse_gauche_joint": {
             "servo_index": 11,
             "visual_sign": 1.0,
-            "visual_offset_rad": 0.0,
+            "visual_offset_rad": 0.12217304763960307,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-08T21:37:26.927187+00:00",
+            "visual_scale": 0.5999999999999996
         },
         "genou_gauche_joint": {
             "servo_index": 12,
-            "visual_sign": 1.0,
+            "visual_sign": -1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-10T15:04:22.335643+00:00",
+            "visual_scale": 1.0
         },
         "cheville_gauche_joint": {
             "servo_index": 13,
-            "visual_sign": 1.0,
+            "visual_sign": -1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-08T21:39:55.151541+00:00",
+            "visual_scale": 1.0
         },
         "tete_g_d_joint": {
             "servo_index": 14,
             "visual_sign": 1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": "2026-06-08T21:39:34.309791+00:00",
+            "visual_scale": 1.0
         },
         "tete_h_b_joint": {
             "servo_index": 15,
-            "visual_sign": 1.0,
+            "visual_sign": -1.0,
             "visual_offset_rad": 0.0,
             "note": "",
-            "validated_at": null
+            "validated_at": null,
+            "visual_scale": 1.0
         }
     }
 }
